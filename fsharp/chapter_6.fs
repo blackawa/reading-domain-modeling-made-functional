@@ -66,3 +66,16 @@ type Contact = {
     ContactInfo : ContactInfo
 }
 
+let changeOrderLinePrice order orderLineId newPrice =
+    let orderLine = order.OrderLines |> findOrderLine orderLineId
+    let newOrderLine = {orderLine with Price = newPrice}
+    let newOrderLines = order.OrderLines |> replaceOrderLine orderLineId newOrderLine
+    // orderLinesの更新に合わせて、amountToBillも更新する
+    let newAmountToBill = newOrderLines |> List.sumBy (fun line -> line.Price)
+    let newOrder = {
+        order with
+            OrderLines = newOrderLines
+            AmountToBill = newAmountToBill
+    }
+    newOrder
+
